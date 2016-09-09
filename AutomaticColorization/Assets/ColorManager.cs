@@ -2,8 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class ColorManager : MonoBehaviour {
-
+public class ColorManager : MonoBehaviour 
+{
     public Texture[] textures;
 
     public Texture2D tex;
@@ -13,8 +13,11 @@ public class ColorManager : MonoBehaviour {
     public Renderer quadRenderer;
     // Use this for initialization
 
-    public float angleH = 120;
+    private float angleH = 240;
     public Slider hueSlider;
+
+    private float sat = 1;
+    public Slider satSlider;
 
     private bool textureLoaded = false;
 
@@ -27,7 +30,8 @@ public class ColorManager : MonoBehaviour {
             originColors[i] = tex.GetPixels();
         }
         hueSlider.value = angleH;
-	}
+        satSlider.value = sat;
+    }
 	
     public void updateHue()
     {
@@ -35,8 +39,14 @@ public class ColorManager : MonoBehaviour {
         Colorize();
     }
 
-	// Update is called once per frame
-	void Update ()
+    public void updateSat()
+    {
+        sat = satSlider.value;
+        Colorize();
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
 	    
 	}
@@ -49,9 +59,10 @@ public class ColorManager : MonoBehaviour {
             tex = (Texture2D)quadRenderer.material.mainTexture;
             Color[] cols = tex.GetPixels();
             //Debug.Log(angleH / 360.0f);
+            //Debug.Log(cols[(int)angleH]);
             for (int i = 0; i < cols.Length; i++)
             {
-                cols[i] = hsl2rgb(angleH, 1, cols[i].g);
+                cols[i] = hsl2rgb(angleH, sat, cols[i].g);
                 /*if(cols[i].g > 0.5)
                 {
                     cols[i] = new Color(cols[i].r, cols[i].g-0.1f, cols[i].b,1);
@@ -62,7 +73,7 @@ public class ColorManager : MonoBehaviour {
         }
     }
 
-    private Color hsl2rgb(float h, int s, float l)
+    private Color hsl2rgb(float h, float s, float l)
     {
         Color col = Color.black;
         float q, p;
