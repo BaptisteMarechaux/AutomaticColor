@@ -109,4 +109,43 @@ public class ColorManager : MonoBehaviour {
     {
         ResetColors();
     }
+
+    public void FindSky()
+    {
+        tex = (Texture2D)quadRenderer.material.mainTexture;
+
+        Color[] cols = tex.GetPixels(); //Colors
+
+        bool[] canColor = new bool[cols.Length];
+
+        int height = quadRenderer.material.mainTexture.height;
+        int width = quadRenderer.material.mainTexture.width;
+
+        for(int i=0;i<height-1;i++)
+        {
+            for(int j=0;j<width;j++)
+            {
+                if(cols[i+j].r/cols[i+width+j].r < 0.75f  /*&& cols[i + j].r < cols[i + width + j].r*/)
+                {
+                    canColor[i] = true;
+                }
+                else
+                {
+                    canColor[i] = false;
+                }
+            }
+        }
+
+        for(int i=0;i<cols.Length;i++)
+        {
+            if (canColor[i])
+                cols[i] = hsl2rgb(144, 1, cols[i].g);
+        }
+
+        tex.SetPixels(cols);
+        tex.Apply();
+
+        quadRenderer.material.mainTexture = tex;
+
+    }
 }
