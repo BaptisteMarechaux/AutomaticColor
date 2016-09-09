@@ -16,6 +16,8 @@ public class ColorManager : MonoBehaviour {
     public float angleH = 120;
     public Slider hueSlider;
 
+    private bool textureLoaded = false;
+
     void Start ()
     {
         originColors = new Color[textures.Length][];
@@ -30,6 +32,7 @@ public class ColorManager : MonoBehaviour {
     public void updateHue()
     {
         angleH = hueSlider.value;
+        Colorize();
     }
 
 	// Update is called once per frame
@@ -40,19 +43,23 @@ public class ColorManager : MonoBehaviour {
 
     public void Colorize()
     {
-        tex = (Texture2D)quadRenderer.material.mainTexture;
-        Color[] cols = tex.GetPixels();
-        Debug.Log(angleH / 360.0f);
-        for (int i = 0; i < cols.Length; i++)
+        if (textureLoaded)
         {
-            cols[i] = hsl2rgb(angleH, 1, cols[i].g);
-            /*if(cols[i].g > 0.5)
+            ResetColors();
+            tex = (Texture2D)quadRenderer.material.mainTexture;
+            Color[] cols = tex.GetPixels();
+            //Debug.Log(angleH / 360.0f);
+            for (int i = 0; i < cols.Length; i++)
             {
-                cols[i] = new Color(cols[i].r, cols[i].g-0.1f, cols[i].b,1);
-            }*/
+                cols[i] = hsl2rgb(angleH, 1, cols[i].g);
+                /*if(cols[i].g > 0.5)
+                {
+                    cols[i] = new Color(cols[i].r, cols[i].g-0.1f, cols[i].b,1);
+                }*/
+            }
+            tex.SetPixels(cols);
+            tex.Apply();
         }
-        tex.SetPixels(cols);
-        tex.Apply();
     }
 
     private Color hsl2rgb(float h, int s, float l)
@@ -94,6 +101,7 @@ public class ColorManager : MonoBehaviour {
     public void switchToTexture(int index)
     {
         quadRenderer.material.mainTexture = textures[index];
+        textureLoaded = true;
         ResetColors();
     }
 
